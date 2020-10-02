@@ -3,11 +3,14 @@ import { NgModule } from '@angular/core';
 import {
   NbAuthComponent,
   NbLoginComponent,
-  NbLogoutComponent,
-  NbRegisterComponent,
   NbRequestPasswordComponent,
   NbResetPasswordComponent,
 } from '@nebular/auth';
+
+// Mfx- Custom Logout and Register components that
+// replace NbLogoutComponent and NbRegisterComponent
+import { LogoutComponent } from 'app/pages/logout/logout.component';
+import { RegisterComponent } from 'app/pages/register/register.component';
 
 export const routes: Routes = [
   {
@@ -29,11 +32,11 @@ export const routes: Routes = [
       },
       {
         path: 'register',
-        component: NbRegisterComponent,
+        component: RegisterComponent,
       },
       {
         path: 'logout',
-        component: NbLogoutComponent,
+        component: LogoutComponent,
       },
       {
         path: 'request-password',

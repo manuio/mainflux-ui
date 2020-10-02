@@ -1,0 +1,111 @@
+<nb-card size="medium">
+  <nb-card-header class="header-tabs sub-header">
+    <div class="row search-bar">
+      <div class="col-md-4">
+        <input nbInput fullWidth placeholder="Server URI" [(ngModel)]="browseServerURI" fieldSize="small">
+      </div>
+      <div class="col-md-2">
+        <input nbInput fullWidth placeholder="ns=0" [(ngModel)]="browseNamespace" fieldSize="small">
+      </div>
+      <div class="col-md-2">
+        <input nbInput fullWidth placeholder="i=84" [(ngModel)]="browseIdentifier" fieldSize="small">
+      </div>
+      <div class="col-md-2">
+        <button nbButton size="small" class="button-blue"
+                (click)="browseOpcuaNodes()">
+          <nb-icon icon="maximize-outline"></nb-icon>
+          Browse
+        </button>
+      </div>
+      <div class="col-md-2">
+        <button nbButton size="small" class="button-green"
+                (click)="subscribeOpcuaNodes()" >
+          <nb-icon icon="collapse-outline"></nb-icon>
+          Subscribe
+        </button>
+      </div>
+    </div>
+    <nb-list>
+      <nb-list-item>
+        <div class="col-md-2">
+          <b>Node ID</b>
+        </div>
+        <div class="col-md-2">
+          <b>Data Type</b>
+        </div>
+        <div class="col-md-4">
+          <b>Description</b>
+        </div>
+        <div class="col-md-2">
+          <b>BrowseName</b>
+        </div>
+        <div class="col-md-2">
+          <input nbInput fullWidth placeholder="Search..." fieldSize="small"
+                 (input)="searchBrowse($event.target.value)">
+        </div>
+      </nb-list-item>
+    </nb-list>
+  </nb-card-header>
+  <nb-card-body>
+    <nb-list>
+      <nb-list-item *ngIf="!browsedNodes.length">
+        No browsed server
+      </nb-list-item>
+      <nb-list-item *ngFor="let node of browsedNodes">
+        <div class="col-md-2">
+          {{ node.NodeID }}
+        </div>
+        <div class="col-md-2">
+          {{ node.DataType }}
+        </div>
+        <div class="col-md-4">
+          {{ node.Description }}
+        </div>
+        <div class="col-md-2">
+          {{ node.BrowseName }}
+        </div>
+        <div class="col-md-2" style="text-align: center;">
+          <nb-checkbox (checkedChange)="onCheckboxChanged($event, node)"></nb-checkbox>
+        </div>
+      </nb-list-item>
+    </nb-list>
+  </nb-card-body>
+</nb-card>
+
+<nb-card>
+  <nb-card-header class="header-tabs">
+    <div class="row">
+      <div class="col-md-4">
+        {{ opcuaNodes.length }} &nbsp; OPC-UA Server Subscription
+      </div>
+      <div class="col-md-4">
+        <input nbInput fullWidth placeholder="Search..." fieldSize="small"
+               (input)="searchNode($event.target.value)">
+      </div>
+      <div class="col-md-2">
+        <button nbButton size="small" class="button-blue"
+                (click)="onClickSave()">
+          <nb-icon icon="save-outline"></nb-icon>
+          Save
+        </button>
+      </div>
+      <div class="col-md-2">
+        <button nbButton size="small" class="button-green"
+                (click)="fileInput.click()">
+          <nb-icon icon="file-add-outline"></nb-icon>
+          Upload
+          <input hidden #fileInput (change)="onFileSelected($event.target.files)" type="file">
+        </button>
+      </div>
+    </div>
+  </nb-card-header>
+
+  <nb-card-body>
+    <ng2-smart-table [settings]="settings"
+                     [source]="source"
+                     (createConfirm)="onCreateConfirm($event)"
+                     (editConfirm)="onEditConfirm($event)"
+                     (deleteConfirm)="onDeleteConfirm($event)">
+    </ng2-smart-table>
+  </nb-card-body>
+</nb-card>

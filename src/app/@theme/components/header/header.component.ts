@@ -1,11 +1,13 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { NbMediaBreakpointsService, NbMenuService, NbSidebarService, NbThemeService } from '@nebular/theme';
 
-import { UserData } from '../../../@core/data/users';
 import { LayoutService } from '../../../@core/utils';
 import { map, takeUntil } from 'rxjs/operators';
 import { Subject, Observable } from 'rxjs';
 import { RippleService } from '../../../@core/utils/ripple.service';
+
+// Mfx - Users service
+import { UsersService } from 'app/common/services/users/users.service';
 
 @Component({
   selector: 'ngx-header',
@@ -48,16 +50,21 @@ export class HeaderComponent implements OnInit, OnDestroy {
 
   currentTheme = 'default';
 
-  userMenu = [ { title: 'Profile' }, { title: 'Log out' } ];
+  // Mfx - Menu and version
+  userMenu = [
+    { title: 'Profile', link: '/pages/profile' },
+    { title: 'Log out', link: '/auth/logout' },
+  ];
+  version = '0.0.0';
 
   public constructor(
     private sidebarService: NbSidebarService,
     private menuService: NbMenuService,
     private themeService: NbThemeService,
-    private userService: UserData,
     private layoutService: LayoutService,
     private breakpointService: NbMediaBreakpointsService,
     private rippleService: RippleService,
+    private usersService: UsersService,
   ) {
     this.materialTheme$ = this.themeService.onThemeChange()
       .pipe(map(theme => {
@@ -69,9 +76,18 @@ export class HeaderComponent implements OnInit, OnDestroy {
   ngOnInit() {
     this.currentTheme = this.themeService.currentTheme;
 
-    this.userService.getUsers()
-      .pipe(takeUntil(this.destroy$))
-      .subscribe((users: any) => this.user = users.nick);
+    // Mfx - get Users infos and picture
+    this.usersService.getUser().subscribe(
+      (resp: any) => {
+        this.user = resp;
+        this.user.picture = this.usersService.getUserPicture();
+      },
+    );
+    this.usersService.getServiceVersion().subscribe(
+      (resp: any) => {
+        this.version = resp.version;
+      },
+    );
 
     const { xl } = this.breakpointService.getBreakpointsMap();
     this.themeService.onMediaQueryChange()

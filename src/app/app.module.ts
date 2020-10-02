@@ -19,10 +19,34 @@ import {
   NbSidebarModule,
   NbToastrModule,
   NbWindowModule,
+  NbInputModule,
+  NbCardModule,
+  NbIconModule,
+  NbButtonModule,
 } from '@nebular/theme';
 
+// MFx- Foorm dependency
+import { FormsModule } from '@angular/forms';
+// Mfx - MQTT dependencies for Gateways page
+import { MqttModule, IMqttServiceOptions, MqttService } from 'ngx-mqtt';
+import { environment } from 'environments/environment';
+export const MQTT_SERVICE_OPTIONS: IMqttServiceOptions = {
+  connectOnCreate: false,
+  url: environment.mqttWsUrl,
+};
+// Mfx - Auth and Profile pages
+import { LogoutComponent } from './pages/logout/logout.component';
+import { RegisterComponent } from './pages/register/register.component';
+import { ProfileComponent } from './pages/profile/profile.component';
+
 @NgModule({
-  declarations: [AppComponent],
+  declarations: [
+    AppComponent,
+    // Mfx Componennt
+    LogoutComponent,
+    RegisterComponent,
+    ProfileComponent,
+  ],
   imports: [
     BrowserModule,
     BrowserAnimationsModule,
@@ -41,8 +65,17 @@ import {
       messageGoogleMapKey: 'AIzaSyA_wNuCzia92MAmdLRzmqitRGvCF7wCZPY',
     }),
     CoreModule.forRoot(),
+    // Mfx dependencies
+    MqttModule.forRoot(MQTT_SERVICE_OPTIONS),
+    FormsModule,
+    NbInputModule,
+    NbCardModule,
+    NbIconModule,
+    NbButtonModule,
   ],
   bootstrap: [AppComponent],
+  // Mfx dependencies
+  providers: [MqttService],
 })
 export class AppModule {
 }

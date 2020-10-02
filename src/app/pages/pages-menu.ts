@@ -8,28 +8,44 @@ export const MENU_ITEMS: NbMenuItem[] = [
     home: true,
   },
   {
-    title: 'FEATURES',
-    group: true,
-  },
-  {
-    title: 'Auth',
-    icon: 'lock-outline',
+    title: 'Things',
+    icon: 'keypad-outline',
     children: [
       {
-        title: 'Login',
-        link: '/auth/login',
+        title: 'Devices',
+        icon: 'film-outline',
+        link: '/pages/things/devices',
       },
       {
-        title: 'Register',
-        link: '/auth/register',
+        title: 'Channels',
+        icon: 'flip-2-outline',
+        link: '/pages/things/channels',
       },
       {
-        title: 'Request Password',
-        link: '/auth/request-password',
+        title: 'LoRa',
+        icon: 'radio-outline',
+        link: '/pages/things/lora',
       },
       {
-        title: 'Reset Password',
-        link: '/auth/reset-password',
+        title: 'OPC-UA',
+        icon: 'globe-outline',
+        link: '/pages/things/opcua',
+      },
+      {
+        title: 'Gateways',
+        icon: 'hard-drive-outline',
+        link: '/pages/things/gateways',
+      },
+    ],
+  },
+  {
+    title: 'Admin',
+    icon: 'shield-outline',
+    children: [
+      {
+        title: 'Twins',
+        icon: 'copy-outline',
+        link: '/pages/admin/twins',
       },
     ],
   },

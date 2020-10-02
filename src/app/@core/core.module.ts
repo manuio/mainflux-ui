@@ -1,6 +1,6 @@
 import { ModuleWithProviders, NgModule, Optional, SkipSelf } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { NbAuthModule, NbDummyAuthStrategy } from '@nebular/auth';
+import { NbAuthModule, NbPasswordAuthStrategy, NbAuthJWTToken } from '@nebular/auth';
 import { NbSecurityModule, NbRoleProvider } from '@nebular/security';
 import { of as observableOf } from 'rxjs';
 
@@ -9,31 +9,11 @@ import {
   AnalyticsService,
   LayoutService,
 } from './utils';
-import { UserData } from './data/users';
-import { UserService } from './mock/users.service';
-import { MockDataModule } from './mock/mock-data.module';
 
-const socialLinks = [
-  {
-    url: 'https://github.com/akveo/nebular',
-    target: '_blank',
-    icon: 'github',
-  },
-  {
-    url: 'https://www.facebook.com/akveo/',
-    target: '_blank',
-    icon: 'facebook',
-  },
-  {
-    url: 'https://twitter.com/akveo_inc',
-    target: '_blank',
-    icon: 'twitter',
-  },
-];
-
-const DATA_SERVICES = [
-  { provide: UserData, useClass: UserService },
-];
+// Mainflux
+import { TokenInterceptor } from 'app/auth/auth.token.interceptor.service';
+import { HTTP_INTERCEPTORS } from '@angular/common/http';
+import { environment } from 'environments/environment';
 
 export class NbSimpleRoleProvider extends NbRoleProvider {
   getRole() {
@@ -43,22 +23,67 @@ export class NbSimpleRoleProvider extends NbRoleProvider {
 }
 
 export const NB_CORE_PROVIDERS = [
-  ...MockDataModule.forRoot().providers,
-  ...DATA_SERVICES,
+  // ...MockDataModule.forRoot().providers,
+  // ...DATA_SERVICES,
   ...NbAuthModule.forRoot({
 
     strategies: [
-      NbDummyAuthStrategy.setup({
+      NbPasswordAuthStrategy.setup({
         name: 'email',
-        delay: 3000,
-      }),
+        token: {
+          class: NbAuthJWTToken,
+          key: 'token', // this parameter indicates where to look for the token
+        },
+        baseEndpoint: '',
+            login: {
+              endpoint: environment.loginUrl,
+            },
+            register: {
+              endpoint: environment.usersUrl,
+            },
+            requestPass: {
+              endpoint: environment.requestPassUrl,
+              method: 'post',
+            },
+            resetPass: {
+              endpoint: environment.resetPassUrl,
+              method: 'put',
+            },
+            logout:
+             { method: null, redirect: { success: '/', failure: '/' } },
+        }),
     ],
     forms: {
       login: {
-        socialLinks: socialLinks,
+        redirectDelay: 0,
+        rememberMe: false,
+        showMessages: {
+          success: false,
+        },
       },
       register: {
-        socialLinks: socialLinks,
+        terms: false,
+        redirectDelay: 0,
+        showMessages: {
+          success: true,
+        },
+      },
+      logout: {
+        redirectDelay: 0,
+        strategy: 'email',
+      },
+      validation: {
+        password: {
+          required: true,
+          minLength: 8,
+          maxLength: 50,
+        },
+        email: {
+          required: true,
+        },
+        fullName: {
+          required: false,
+        },
       },
     },
   }).providers,
@@ -92,6 +117,13 @@ export const NB_CORE_PROVIDERS = [
     NbAuthModule,
   ],
   declarations: [],
+  providers: [
+    {
+      provide: HTTP_INTERCEPTORS,
+      useClass: TokenInterceptor,
+      multi: true,
+    },
+  ],
 })
 export class CoreModule {
   constructor(@Optional() @SkipSelf() parentModule: CoreModule) {
